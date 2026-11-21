@@ -225,16 +225,18 @@ private fun NovaChatApp(
     var showDrawer by remember { mutableStateOf(false) }
     var error by remember { mutableStateOf<String?>(null) }
     val listState = rememberLazyListState()
-    val scope = rememberCoroutineScope()
+    val drawerState = androidx.compose.material3.rememberDrawerState(DrawerValue.Closed)
+
+    LaunchedEffect(showDrawer) {
+        if (showDrawer) drawerState.open() else drawerState.close()
+    }
 
     LaunchedEffect(messages.size, messages.lastOrNull()?.content, messages.lastOrNull()?.reasoning) {
         if (messages.isNotEmpty()) listState.animateScrollToItem(messages.lastIndex)
     }
 
     ModalNavigationDrawer(
-        drawerState = androidx.compose.material3.rememberDrawerState(
-            if (showDrawer) DrawerValue.Open else DrawerValue.Closed
-        ),
+        drawerState = drawerState,
         drawerContent = {
             ModalDrawerSheet(
                 drawerContainerColor = Panel,
